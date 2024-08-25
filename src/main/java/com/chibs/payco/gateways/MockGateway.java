@@ -1,6 +1,8 @@
 package com.chibs.payco.gateways;
 
 import com.chibs.payco.PaymentGateway;
+import com.chibs.payco.core.TransactionStatus;
+import com.chibs.payco.dto.GatewayResponseDto;
 import com.chibs.payco.dto.TransactionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,14 +16,20 @@ public class MockGateway implements PaymentGateway {
     //protected boolean useEncryption = false;
 
     @Override
-    public Map<String, Object> processPayment(String payload) {
+    public GatewayResponseDto processPayment(TransactionDto data) {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        log.info("Payment event triggered >>>>>>>>>{}", payload);
-        return Map.of("status", "success", "message", "Payment Successful");
+        log.info("Payment event triggered >>>>>>>>>{}", data);
+        return GatewayResponseDto.builder()
+                .amount(String.valueOf(data.getAmount()))
+                .currency(data.getCurrency())
+                .transactionReference(data.getTransactionReference())
+                .type(data.getPaymentMethod().name())
+                .status(TransactionStatus.SUCCESSFUL.name())
+                .build();
     }
 
 

@@ -1,6 +1,7 @@
 package com.chibs.payco.payments;
 
 import com.chibs.payco.PaymentProcessor;
+import com.chibs.payco.dto.GatewayResponseDto;
 import com.chibs.payco.dto.TransactionDto;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,13 @@ public class PaymentService {
             Optional<Payment> checkExists = paymentRepository.findByTransactionReference(payload.getTransactionReference());
             if(checkExists.isPresent()){
                 Payment payment = checkExists.get();
-                return Map.of("status", payment.getStatus(), "message", "Duplicate transaction");
+                return Map.of("transaction_id", payment.getTransactionReference(),"status", payment.getStatus(), "message", "Duplicate transaction");
             }
         }
         //do some Audit Trail here
 
-        return processor.doPayment(payload);
+        GatewayResponseDto res = processor.doPayment(payload);
+        return Map.of("transaction_id", res.getTransactionReference(),"status", res.getStatus(), "message", "Payment successful");
+
     }
 }
