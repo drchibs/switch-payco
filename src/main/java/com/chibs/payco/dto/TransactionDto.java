@@ -12,4 +12,5 @@ public class TransactionDto {
     private double amount;
     private String paymentMethod;
     private String currency;
+    private String transactionReference;
 }

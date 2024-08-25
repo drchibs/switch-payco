@@ -11,8 +11,10 @@ import java.util.Map;
 @Slf4j
 public class MockGateway implements PaymentGateway {
 
+    //protected boolean useEncryption = false;
+
     @Override
-    public Map<String, Object> processPayment(TransactionDto payload) {
+    public Map<String, Object> processPayment(String payload) {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -21,6 +23,7 @@ public class MockGateway implements PaymentGateway {
         log.info("Payment event triggered >>>>>>>>>{}", payload);
         return Map.of("status", "success", "message", "Payment Successful");
     }
+
 
     @Override
     public Object handleWebhook(String webhookData) {
