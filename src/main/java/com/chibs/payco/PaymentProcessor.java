@@ -1,5 +1,6 @@
 package com.chibs.payco;
 
+import com.chibs.payco.core.TransactionType;
 import com.chibs.payco.dto.TransactionDto;
 import com.chibs.payco.gateways.MockGateway;
 import org.springframework.stereotype.Service;
@@ -10,17 +11,22 @@ import java.util.Base64;
 import java.util.Map;
 
 @Service
-public class PaymentService {
+public class PaymentProcessor {
 
     private final MockGateway mockGateway;
 
-    public PaymentService(MockGateway mockGateway) {
+    public PaymentProcessor(MockGateway mockGateway) {
         this.mockGateway = mockGateway;
     }
 
     public Map<String, Object> doPayment(TransactionDto transaction) {
         if (transaction == null || !isValidTransaction(transaction)) {
             throw new IllegalArgumentException("Invalid transaction data");
+        }
+
+        if(transaction.getPaymentMethod() == TransactionType.USSD){
+            //simulate use of a dedicated gateway
+            return Map.of("status", "success", "message", "USSD transaction successful");
         }
 
         String securePayload = encryptPayload(transaction);
