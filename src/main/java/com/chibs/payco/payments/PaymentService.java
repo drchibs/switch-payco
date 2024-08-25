@@ -1,6 +1,7 @@
 package com.chibs.payco.payments;
 
 import com.chibs.payco.PaymentProcessor;
+import com.chibs.payco.core.TransactionStatus;
 import com.chibs.payco.dto.GatewayResponseDto;
 import com.chibs.payco.dto.TransactionDto;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,19 @@ public class PaymentService {
                 return Map.of("transaction_id", payment.getTransactionReference(),"status", payment.getStatus(), "message", "Duplicate transaction");
             }
         }
-        //do some Audit Trail here
+
+        Payment pay = new Payment();
+        pay.setTransactionReference(payload.getTransactionReference());
+        pay.setPaymentMethod(payload.getPaymentMethod());
+        pay.setCurrency(payload.getCurrency());
+        pay.setAmount(payload.getAmount());
+        pay.setStatus(TransactionStatus.PENDING);
+        var savedPay = paymentRepository.save(pay);
 
         GatewayResponseDto res = processor.doPayment(payload);
+        savedPay.setStatus(TransactionStatus.valueOf(res.getStatus()));
+        paymentRepository.save(savedPay);
+        //do some Audit Trail here
         return Map.of("transaction_id", res.getTransactionReference(),"status", res.getStatus(), "message", "Payment successful");
 
     }

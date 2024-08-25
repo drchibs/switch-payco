@@ -39,8 +39,7 @@ public class PaymentProcessor {
 
         //String securePayload = encryptPayload(transaction); - hold on with this
 
-        GatewayResponseDto gatewayResponse = mockGateway.processPayment(transaction);
-        return gatewayResponse;
+        return mockGateway.processPayment(transaction);
     }
 
     private boolean isValidTransaction(TransactionDto transaction) {
